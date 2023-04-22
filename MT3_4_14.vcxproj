@@ -137,6 +137,7 @@
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
     <ClInclude Include="Default.h" />
     <ClInclude Include="MT3_00_01.h" />
+    <ClInclude Include="MT3_00_02.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

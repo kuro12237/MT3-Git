@@ -107,5 +107,6 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.h" />
     <ClInclude Include="MT3_00_01.h" />
     <ClInclude Include="Default.h" />
+    <ClInclude Include="MT3_00_02.h" />
   </ItemGroup>
 </Project>
