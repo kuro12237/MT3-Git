@@ -7,14 +7,34 @@ const char kWindowTitle[] = "LE2B_14_サカキバラ_イブキ";
 
 #define Max 4
 
-#define kCWid 60
-#define kCHei 20
+static const int kCWid = 60;
+static const int kCHei = 20;
 
 //メモ
 // オイラー角
 // 回転の順序で答えが違う
 //RoteteOrder
 
+
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2)
+{
+	Matrix4x4 result;
+
+	for (int r = 0; r < Max; r++)
+	{
+		for (int c = 0; c < Max; c++)
+		{
+			float tmp = 0.0f;
+			for (int i = 0; i < 4; i++)
+			{
+				tmp = tmp + m1.m[r][i] * m2.m[i][c];
+				result.m[r][c] = tmp;
+			}
+		}
+
+	}
+	return result;
+}
 
 
 Matrix4x4 MakeRotateXMatrix(float radian)
@@ -125,6 +145,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -149,7 +170,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
 		MatrixScreenPrintf(0, kCHei * 5, rotateYMatrix, "rotateYMatrix");
 		MatrixScreenPrintf(0, kCHei * 5 *2 , rotateZMatrix, "rotateZMatrix");
-
+		MatrixScreenPrintf(0, kCHei * 5 * 3, rotateXYZMatrix, "rotateXYZMatrix");
 
 		/// ↑描画処理ここまで
 		///
