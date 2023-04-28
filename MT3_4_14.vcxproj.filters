@@ -108,5 +108,6 @@
     <ClInclude Include="MT3_00_01.h" />
     <ClInclude Include="Default.h" />
     <ClInclude Include="MT3_00_02.h" />
+    <ClInclude Include="MT3_00_03.h" />
   </ItemGroup>
 </Project>

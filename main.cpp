@@ -1,18 +1,57 @@
 #include <Novice.h>
-#include <math.h>
+#include<cmath>
+
 const char kWindowTitle[] = "LE2B_14_サカキバラ_イブキ";
 #include<Default.h>
 #include<cassert>
 
-static const int  kCHei = 20;
-static const int  kCWid = 60;
+#define Max 4
+
+#define kCWid 60
+#define kCHei 20
+
+//メモ
+// オイラー角
+// 回転の順序で答えが違う
+//RoteteOrder
 
 
-Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
+
+Matrix4x4 MakeRotateXMatrix(float radian)
+{
 	Matrix4x4 result;
+
 	result.m[0][0] = 1.0f;
 	result.m[0][1] = 0.0f;
 	result.m[0][2] = 0.0f;
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = 0.0f;
+	result.m[1][1] = std::cos(radian);
+	result.m[1][2] = std::sin(radian);
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 0.0f;
+	result.m[2][1] = -(std::sin(radian));
+	result.m[2][2] = std::cos(radian);
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+
+Matrix4x4 MakeRotateYMatrix(float radian)
+{
+	Matrix4x4 result;
+
+	result.m[0][0] = std::cos(radian);
+	result.m[0][1] = 0.0f;
+	result.m[0][2] = -(std::sin(radian));
 	result.m[0][3] = 0.0f;
 
 	result.m[1][0] = 0.0f;
@@ -20,88 +59,45 @@ Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
 	result.m[1][2] = 0.0f;
 	result.m[1][3] = 0.0f;
 
-	result.m[2][0] = 0.0f;
+	result.m[2][0] = std::sin(radian);
 	result.m[2][1] = 0.0f;
-	result.m[2][2] = 1.0f;
+	result.m[2][2] = std::cos(radian);
 	result.m[2][3] = 0.0f;
 
-
-	result.m[3][0] = translate.x;
-	result.m[3][1] = translate.y;
-	result.m[3][2] = translate.z;
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
 
-
 	return result;
 }
 
-
-Vector3 Transform(const Vector3 vector, const Matrix4x4 matrix) {
-	Vector3 result;
-
-	result.x = (vector.x * matrix.m[0][0]) + (vector.y * matrix.m[1][0])
-		+ (vector.z * matrix.m[2][0]) + (1.0f * matrix.m[3][0]);
-
-	result.y = (vector.x * matrix.m[0][1]) + (vector.y * matrix.m[1][1])
-		+ (vector.z * matrix.m[2][1]) + (1.0f * matrix.m[3][1]);
-
-	result.z = (vector.x * matrix.m[0][2]) + (vector.y * matrix.m[1][2])
-		+ (vector.z * matrix.m[2][2]) + (1.0f * matrix.m[3][2]);
-
-	float w = (vector.x * matrix.m[0][3]) + (vector.y * matrix.m[1][3]) + (vector.z * matrix.m[2][3]) + (1.0f * matrix.m[3][3]);
-
-
-	assert(w != 0.0f);
-	result.x /= w;
-	result.y /= w;
-	result.z /= w;
-
-	return result;
-
-
-}
-
-Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
+Matrix4x4 MakeRotateZMatrix(float radian)
+{
 	Matrix4x4 result;
-	
 
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			result.m[i][j] = 0.0f;
-			if (result.m[i==0][j==0])
-			{
-				result.m[0][0] = scale.x;
-			}if (result.m[i == 1][j == 1])
-			{
-				result.m[1][1] = scale.y;
-			}
-			if (result.m[i == 2][j == 2])
-			{
-				result.m[2][2] = scale.z;
-			}
-			if (result.m[i == 3][j == 3])
-			{
-				result.m[3][3] = 1.0f;
-			}
-		}
+	result.m[0][0] = std::cos(radian);
+	result.m[0][1] = std::sin(radian);
+	result.m[0][2] = 0.0f;
+	result.m[0][3] = 0.0f;
 
+	result.m[1][0] = -(std::sin(radian));
+	result.m[1][1] = std::cos(radian);
+	result.m[1][2] = 0.0f;
+	result.m[1][3] = 0.0f;
 
-	}
+	result.m[2][0] = 0.0f;
+	result.m[2][1] = 0.0f;
+	result.m[2][2] = 0.0f;
+	result.m[2][3] = 1.0;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
 
 	return result;
 }
-
-void VectorScreenPrintf(int x, int y, const Vector3 vector, const char* label) {
-	Novice::ScreenPrintf(x + kCWid * 0, y, "%6.02f", vector.x);
-	Novice::ScreenPrintf(x + kCWid * 1, y, "%6.02f", vector.y);
-	Novice::ScreenPrintf(x + kCWid * 2, y, "%6.02f", vector.z);
-
-	Novice::ScreenPrintf(x + kCWid * 4, y, "%s", label);
-
-}
-
 
 void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* label) {
 	for (int row = 0; row < 4; ++row) {
@@ -111,6 +107,8 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4 matrix, const char* label)
 		}
 	}
 }
+
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -122,20 +120,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
+	Vector3 rotate = { 0.4f,1.43f,-0.8f };
 
-
-	Vector3 translate{ 4.1f,2.6f,0.8f };
-	Vector3 scale{ 1.5f,5.2f,7.3f };
-
-	Vector3 point{ 2.3f,3.8f,1.4f };
-
-	Matrix4x4 transformMatrix = {
-		1.0f,2.0f,3.0f,4.0f,
-		3.0f,1.0f,1.0f,2.0f,
-		1.0f,4.0f,2.0f,3.0f,
-		2.0f,2.0f,1.0f,3.0f
-	};
-
+	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -148,12 +137,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
-		Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-
-		//////
-		Vector3 transformed = Transform(point, transformMatrix);
-		/////
+	
 
 		///
 		/// ↑更新処理ここまで
@@ -162,9 +146,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-        VectorScreenPrintf(0, 0, transformed, "transformed");
-		MatrixScreenPrintf(0, kCHei * 5 * 0 + kCHei, translateMatrix, "translateMatrix");
-		MatrixScreenPrintf(0, kCHei * 5 * 1 + kCHei, scaleMatrix, "scaleMatrix");
+		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
+		MatrixScreenPrintf(0, kCHei * 5, rotateYMatrix, "rotateYMatrix");
+		MatrixScreenPrintf(0, kCHei * 5 *2 , rotateZMatrix, "rotateZMatrix");
 
 
 		/// ↑描画処理ここまで
