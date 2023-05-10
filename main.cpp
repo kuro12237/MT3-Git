@@ -6,7 +6,8 @@ const char kWindowTitle[] = "LE2B_14_サカキバラ_イブキ";
 #include<cassert>
 
 #define Max 4
-
+#include <Vector3.h>
+#include "Vector2.h"
 static const int kCWid = 60;
 static const int kCHei = 20;
 
@@ -15,7 +16,7 @@ static const int kCHei = 20;
 // 回転の順序で答えが違う
 //RoteteOrder
 
-/*
+
 
 Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2) {
 	Matrix4x4 result;
@@ -45,8 +46,34 @@ Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2) {
 
 }
 
+//Scale
+Matrix4x4 MakeScaleMatrix(const Vector3 scale) {
+	Matrix4x4 result;
+	result.m[0][0] = scale.x;
+	result.m[0][1] = 0.0f;
+	result.m[0][2] = 0.0f;
+	result.m[0][3] = 0.0f;
 
-*/
+	result.m[1][0] = 0.0f;
+	result.m[1][1] = scale.y;
+	result.m[1][2] = 0.0f;
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 0.0f;
+	result.m[2][1] = 0.0f;
+	result.m[2][2] = scale.z;
+	result.m[2][3] = 0.0f;
+
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+
+	return result;
+}
+
 Matrix4x4 MakeRotateXMatrix(float radian)
 {
 	Matrix4x4 result;
@@ -150,9 +177,70 @@ Vector3 Multiply(float scalar, const Vector3& v)
 
 
 
+
+//AllRotate
+Matrix4x4 MakeRotateXYZMatrix(float radianX, float radianY, float radianZ) {
+	Matrix4x4 result;
+
+	Matrix4x4 rotateMatrixX = MakeRotateXMatrix(radianX);
+	Matrix4x4 rotateMatrixY = MakeRotateYMatrix(radianY);
+	Matrix4x4 rotateMatrixZ = MakeRotateZMatrix(radianZ);
+
+
+
+	result = Multiply(rotateMatrixX, Multiply(rotateMatrixY, rotateMatrixZ));
+
+	return result;
+
+}
+
+//Translate
+Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
+	Matrix4x4 result;
+	result.m[0][0] = 1.0f;
+	result.m[0][1] = 0.0f;
+	result.m[0][2] = 0.0f;
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = 0.0f;
+	result.m[1][1] = 1.0f;
+	result.m[1][2] = 0.0f;
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 0.0f;
+	result.m[2][1] = 0.0f;
+	result.m[2][2] = 1.0f;
+	result.m[2][3] = 0.0f;
+
+
+	result.m[3][0] = translate.x;
+	result.m[3][1] = translate.y;
+	result.m[3][2] = translate.z;
+	result.m[3][3] = 1.0f;
+
+
+	return result;
+}
+
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {
+	Matrix4x4 result;
 
+	//S
+	Matrix4x4 scaleMatrix;
+	scaleMatrix = MakeScaleMatrix(scale);
+
+	//R
+	Matrix4x4 rotateMatrix;
+	rotateMatrix = MakeRotateXYZMatrix(rotate.x, rotate.y, rotate.z);
+
+	Matrix4x4 translateMatrix;
+	translateMatrix = MakeTranslateMatrix(translate);
+
+
+	result = Multiply(scaleMatrix, Multiply(rotateMatrix, translateMatrix));
+
+	return result;
 
 }
 
@@ -169,7 +257,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 scale = { 1.2f,0.79f,-2.1f };
 	Vector3 rotate = { 0.4f,1.43f,-0.8f };
 	Vector3 translate = { 2.7f,-4.15f,1.57f };
-	Matrix4x4 worldMatrix;
+	Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 
 
 // ウィンドウの×ボタンが押されるまでループ
@@ -194,6 +282,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 	
+		MatrixScreenPrintf(0, 0, worldMatrix, "WorldMatrix");
 		
 		/// ↑描画処理ここまで
 		///
