@@ -1,4 +1,4 @@
-﻿#include <Function.h>
+﻿#include <MatrixFunc.h>
 #include <cassert>
 #include <Novice.h>
 #include <cmath>
@@ -503,88 +503,6 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	return result;
 }
 
-
-//Gridを表示
-void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
-	//Gridの半分の幅
-	const float GRID_HALF_WIDTH = 2.0f;
-	
-	//分割数
-	const uint32_t SUB_DEVISION = 10;
-
-	//一つ分の長さ
-	const float GRID_EVERY = (GRID_HALF_WIDTH * 2.0f) / float(SUB_DEVISION);
-	//奥から手前への線を順々に引いてくる(縦)
-	for (uint32_t xIndex = 0; xIndex <= SUB_DEVISION; ++xIndex) {
-		//上の情報を使ってワールド座標上の始点と終点を求める
-		Vector3 LocalVertices[SUB_DEVISION] = {};
-		
-		LocalVertices[SUB_DEVISION].x = xIndex * GRID_HALF_WIDTH;
-
-
-		//ローカル座標系
-		//      ↓			(WorldMatrix)
-		//ワールド座標系
-		//      ↓			(ViewMatrix(Inverse))
-		//ビュー座標系
-		//      ↓			(Projection)
-		//正規化デバイス座標系
-		//      ↓
-		//スクリーン座標系
-
-		Matrix4x4 returnWorldMatrix = {};
-
-		returnWorldMatrix = Inverse(viewProjectionMatrix);
-
-
-		//viewProjectionMatrix
-		
-		//viewProjectionMatrix=Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
-
-		
-		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrix = Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
-
-		Vector3 ndcVertices = Transform(LocalVertices[xIndex], worldViewProjectionMatrix);
-		LocalVertices[xIndex] = Transform(ndcVertices, viewportMatrix);
-
-		////計算
-		////ワールドへ
-		//Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, localCoodinate);
-		//
-		//Matrix4x4 cameraMatrix = MakeAffineMatrix(scale, cameraRotate, cameraTranslate);
-		//
-		////ビュー(カメラ)
-		//Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-		//
-		////射影
-		//Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WINDOW_SIZE_WIDTH) / float(WINDOW_SIZE_HEIGHT), 0.1f, 100.0f);
-		//
-		////ワールドへ
-		//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-		////ビューポート
-		//Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0,float(WINDOW_SIZE_WIDTH), float(WINDOW_SIZE_HEIGHT), 0.0f, 1.0f);
-
-
-		//スクリーン座標系まで変換をかける
-
-		//変換した座標を使って表示
-
-		Novice::DrawLine(
-			LocalVertices[xIndex].x,
-			LocalVertices[xIndex].y,
-			LocalVertices[xIndex].x,
-			LocalVertices[xIndex].z,
-			0xAAAAAAFF);
-
-	}
-	//左から右も同じように順々に引いていく(横)
-	for (uint32_t zIndex = 0; zIndex <= SUB_DEVISION; ++zIndex) {
-		//奥から手前が左右に変わるだけ
-
-	}
-
-}
 
 
 
