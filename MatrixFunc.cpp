@@ -1,4 +1,4 @@
-﻿#include <Function.h>
+﻿#include <MatrixFunc.h>
 #include <cassert>
 #include <Novice.h>
 #include <cmath>
