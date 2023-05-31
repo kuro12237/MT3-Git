@@ -543,10 +543,10 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 
 		
 		////ワールドへ
-		Matrix4x4 worldViewProjectionMatrix = Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
+		//Matrix4x4 worldViewProjectionMatrix = Multiply(returnWorldMatrix, Multiply(viewMatrix, projectionMatrix));
 
-		Vector3 ndcVertices = Transform(LocalVertices[xIndex], worldViewProjectionMatrix);
-		LocalVertices[xIndex] = Transform(ndcVertices, viewportMatrix);
+		//Vector3 ndcVertices = Transform(LocalVertices[xIndex], worldViewProjectionMatrix);
+		//LocalVertices[xIndex] = Transform(ndcVertices, viewportMatrix);
 
 		////計算
 		////ワールドへ
